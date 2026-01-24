@@ -1,6 +1,5 @@
 # Tollbot
 
-[![GitHub Repo](https://img.shields.io/badge/GitHub-tollbot-blue)](https://github.com/kristopolous/tollbot)
 
 Tollbot is a **fork of Certbot** designed for site operators who want to **monetize access to their content for AI scrapers**. It integrates with **Circle / USDC payments on Arc**, enabling a seamless flow for technical users and admins to enforce a “pay-to-scrape” policy.
 
