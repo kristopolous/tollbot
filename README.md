@@ -1,11 +1,11 @@
-# Tollbot
-
+<p align="center">
+ <img width="209" height="217" alt="tollbot-logo" src="https://github.com/user-attachments/assets/24c656a6-750c-4dd1-ad44-8d8c0d653e18" /> <br/>
+<strong>Charge AI for your hard work</strong>
+</p>
 
 Tollbot is a **fork of Certbot** designed for site operators who want to **monetize access to their content for AI scrapers**. It integrates with **Circle / USDC payments on Arc**, enabling a seamless flow for technical users and admins to enforce a “pay-to-scrape” policy.
 
 Tollbot follows the familiar **Certbot experience** — simple CLI commands, automated TLS handling, and a step-by-step flow — but replaces the certificate issuance workflow with **payment policy enforcement**.
-
----
 
 ## Features
 
