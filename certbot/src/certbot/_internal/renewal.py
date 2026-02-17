@@ -48,7 +48,7 @@ ARI_RETRY_AFTER_CONFIG_ITEM = "ari_retry_after"
 # the renewal configuration process loses this information.
 STR_CONFIG_ITEMS = ["config_dir", "logs_dir", "work_dir", "user_agent",
                     "server", "account", "authenticator", "installer",
-                    "renew_hook", "pre_hook", "post_hook", "http01_address",
+                    "deploy_hook", "pre_hook", "post_hook", "http01_address",
                     "preferred_chain", "key_type", "elliptic_curve",
                     "preferred_profile", "required_profile"]
 INT_CONFIG_ITEMS = ["rsa_key_size", "http01_port"]
@@ -572,7 +572,7 @@ def renew_cert(config: configuration.NamespaceConfig, sans: Optional[list[san.SA
         lineage.update_all_links_to(lineage.latest_common_version())
         lineage.truncate()
 
-    hooks.renew_hook(config, sans, lineage.live_dir)
+    hooks.deploy_hook(config, sans, lineage.live_dir)
 
 
 def report(msgs: Iterable[str], category: str) -> str:
@@ -606,7 +606,7 @@ def _renew_describe_results(config: configuration.NamespaceConfig, renew_success
     if not renew_successes and not renew_failures:
         notify(f"No {renewal_noun}s were attempted.")
         if (config.pre_hook is not None or
-                config.renew_hook is not None or config.post_hook is not None):
+                config.deploy_hook is not None or config.post_hook is not None):
             notify("No hooks were run.")
     elif renew_successes and not renew_failures:
         notify(f"Congratulations, all {renewal_noun}s succeeded: ")
@@ -632,16 +632,19 @@ def _renew_describe_results(config: configuration.NamespaceConfig, renew_success
 def handle_renewal_request(config: configuration.NamespaceConfig) -> None:
     """Examine each lineage; renew if due and report results"""
 
-    # This is trivially False if config.domains is empty
-    if any(domain.dns_name not in config.webroot_map for domain in config.domains):
-        # If more plugins start using cli.add_domains,
+    sans: list[san.SAN] = config.domains + config.ip_addresses
+
+    # This is trivially False if sans is empty
+    if any(str(san) not in config.webroot_map for san in sans):
+        # If more plugins start using cli.add_domain / cli.add_ip_address,
         # we may want to only log a warning here
         raise errors.Error("Currently, the renew verb is capable of either "
                            "renewing all installed certificates that are due "
                            "to be renewed or renewing a single certificate specified "
-                           "by its name. If you would like to renew specific "
-                           "certificates by their domains, use the certonly command "
-                           "instead. The renew verb may provide other options "
+                           "by its name using the --cert-name option (-d, --domain, and "
+                           "--ip-address are not valid options for the renew subcommand). If you "
+                           "would like to renew specific certificates by their identifiers, use "
+                           "the certonly command instead. The renew verb may provide other options "
                            "for selecting certificates to renew in the future.")
 
     if config.certname:
