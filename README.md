@@ -1,62 +1,51 @@
-<p align="center">
- <img width="209" height="217" alt="tollbot-logo" src="https://github.com/user-attachments/assets/24c656a6-750c-4dd1-ad44-8d8c0d653e18" /> <br/>
-<strong>Charge AI for your hard work</strong>
-</p>
+# Tollbot
 
-Tollbot is a **fork of Certbot** designed for site operators who want to **monetize access to their content for AI scrapers**. It integrates with **Circle / USDC payments on Arc**, enabling a seamless flow for technical users and admins to enforce a “pay-to-scrape” policy.
+Charge AI for your hard work
 
-Tollbot follows the familiar **Certbot experience** — simple CLI commands, automated TLS handling, and a step-by-step flow — but replaces the certificate issuance workflow with **payment policy enforcement**.
+Tollbot is a fork of Certbot designed for site operators who want to monetize access to their content for AI scrapers. It integrates with Circle/USDC payments on Arc, enabling a seamless flow for technical users and admins to enforce a "pay-to-scrape" policy.
+
+Tollbot follows the familiar Certbot experience — simple CLI commands, automated nginx handling, and a step-by-step flow — but replaces the certificate issuance workflow with payment policy enforcement.
 
 ## Features
 
 * **Certbot-style CLI experience**
-
   * Familiar commands for technical users and system admins
   * Step-by-step configuration
 * **USDC / Circle integration**
-
   * Accept payments directly via Circle
   * Generate and verify payment tokens for scrapers
 * **Robots.txt-based policy**
-
   * Read and parse pricing directives in `robots.txt`
   * Enforce per-path access pricing
 * **nginx integration**
-
   * Automatically configures nginx to enforce paid scraping
-  * Lightweight Go/Lua modules handle request validation
+  * Lightweight Lua modules handle request validation
 * **Audit & logs**
-
   * Track paid accesses
   * Optional CSV/JSON export for analytics
 
----
-
 ## Installation
 
-Tollbot is distributed as a single Go binary and requires:
+Tollbot is distributed as a Python package and requires:
 
 * Linux (Debian / Ubuntu recommended)
 * nginx installed and accessible
+* Python 3.8+
 * `robots.txt` configured with tollbot directives
-
-Download:
 
 ```bash
 git clone https://github.com/kristopolous/tollbot.git
 cd tollbot
-make build
+pip install -e .
 sudo cp bin/tollbot /usr/local/bin/
 ```
-
----
 
 ## Basic Usage
 
 Initialize Tollbot for your site:
 
 ```bash
-sudo tollbot init --domain example.com
+sudo tollbot init --domain example.com --wallet YOUR_CIRCLE_WALLET_ID
 ```
 
 This will:
@@ -77,17 +66,14 @@ Optional flags:
 ```bash
 --dry-run       # Test payment verification without blocking
 --log-level     # Set verbosity: info, debug, error
---wallet        # Circle wallet address for payments
 ```
-
----
 
 ## robots.txt Integration
 
 Tollbot uses **robots.txt comments** to define pay-to-scrape policies:
 
 ```
-# @wallet: xxxxxx @currency: USDC
+# @wallet: CIRCLE_WALLET_ID @currency: USDC
 User-agent: *
 Disallow: /cgi-bin/  # @price: 0.001 @unit: 100
 Disallow: /tmp/      # @price: 0.003 @unit: 100
@@ -100,3 +86,6 @@ Disallow: /tmp/      # @price: 0.003 @unit: 100
 
 Tollbot reads this file and enforces payment before allowing access to paths marked with pricing directives.
 
+## License
+
+MIT
